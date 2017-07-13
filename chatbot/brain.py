@@ -1,0 +1,347 @@
+import csv
+import random
+import ast#??????????????????????????????????
+import json
+from pathlib import Path
+
+# what's your name? phill. really?  is that a real name? im excited!
+
+testMem = {'data': 'null',
+           'phraseTypes':{
+                             'greetings': 
+                                          {'hi!': 
+                                                  {'respList': ['howdy!', 'sup dawg?'],
+                                                   'stats': 'null'                    },
+                                           'howdy!': 
+                                                    {'respList': ['hey there good buddy!'],
+                                                     'stats': 'null'                       }},
+                             'statements': {'I like dogs.':{'respList':['null'],
+                                                            'stats': 'null'    }}}}
+
+class Brain:
+    def __init__(self, suPac):
+        self.MEM_PATH = suPac['MEMORY_PATH']
+        self.COMMAND_LIST = suPac['COMMAND_LIST']
+        self.PUNC_LIST = suPac['PUNC_LIST']
+        self.PRE_CB_UI_STR = suPac['PRE_CB_UI_STR']
+        self.POST_CB_UI_STR = suPac['POST_CB_UI_STR']
+        self.POST_SENT_SPACE = suPac['POST_SENT_SPACE']
+        self.OGgreetings = suPac['OG_GREETINGS']
+        
+        self.mem = {}
+        self.inList = []
+        self.outList = []
+        self.endProgram = False
+        self.numResponses = 0
+        
+        self.memShell = {'data': 'null',
+                         'phraseTypes': {}}
+                         
+        self.phraseDataShell = {'respList': [],
+                                'stats': 'null'}
+                                
+        self.phraseTypePuncDict = {'greetings' : None,
+                                   'statements': '.',
+                                   'questions' : '?',
+                                   'bangs'     : '!'   }
+        
+        #build
+        memFile = Path(self.MEM_PATH)
+        if memFile.exists():
+            self.loadMem()
+        else:
+            self.buildNewMem()
+            
+            
+#==========================================================================================
+#==========================================================================================
+#
+#   "PUBLIC"
+#
+#==========================================================================================
+#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+    def getGreeting(self):#improve!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        randGreetDict = self.randFromDict(self.mem['phraseTypes']['greetings'])
+        greeting = randGreetDict['key']
+        return greeting
+        
+        
+    def getResponse(self):
+        self.numResponses += 1
+        
+        #get input
+        unFormattedInput = self.getLast(self.inList)
+        input = self.formatPhrase(unFormattedInput)
+        
+        #check to see if a response to input is already in memory
+        knownResp = self.respInMem(input)
+        if knownResp == False:
+            response = self.guessResp(input)
+        else:
+            response = knownResp
+                
+        
+        
+        #response = 'response: for some reason i cant add a new greeting without all OGgreetings becomming False'
+        return response
+        
+        
+    def executeCommand(self, command):
+        print('Executing Command:', command)
+        if command == 'print memory':
+            print('Printing memory...')
+            print(self.mem)
+        elif command == 'backup memory':
+            pass
+        elif command == 'end':
+            self.endProgram = True
+        elif command == 'test':
+            print('testing...')
+            print(self.mem['phraseTypes']['greetings']['hi TEEEEEEEEEEEEST!'])#['respList']
+            print((self.mem['phraseTypes']['greetings']['hi TEEEEEEEEEEEEST!']) is dict)
+        else:
+            print('ERROR: executeCommand()')
+
+            
+    def logInteraction(self):
+        #get input and output and related info
+        unFormattedInput = self.getLast(self.inList)
+        input = self.formatPhrase(unFormattedInput)
+        output = self.getLast(self.outList)
+        outPhraseType = self.getPhraseType(output)
+        outOGgreetStat = self.mem['phraseTypes'][outPhraseType][output]['stats']['OGgreeting']
+          
+        #add input to output's respList if not already there
+        if input not in self.mem['phraseTypes'][outPhraseType][output]['respList']:
+            self.mem['phraseTypes'][outPhraseType][output]['respList'].append(input)
+           
+        #find inPhraseType 
+        if outPhraseType == 'greetings' and outOGgreetStat == True:
+            inPhraseType = 'greetings'
+        else:
+            inPhraseType = self.getPhraseType(input)
+       
+        #save input as new phrase if it doesnt already exists
+        if input not in self.mem['phraseTypes'][inPhraseType]:
+            self.addPhrase(input, inPhraseType)
+            
+        #save to csv
+        self.saveMem(self.mem)
+
+        
+    def formatPhrase(self, phrase):                    
+        #get list of all sentances (uncapitalized)
+        sentList = self.splitSents(phrase)
+        #capitalize first letter of every sentance 
+        capSentList = []
+        for sent in sentList:
+            capSentList.append(self.capSent(sent))  
+        #put it all together into one phrase
+        finalPhrase = ''
+        for sent in capSentList:
+            finalPhrase = finalPhrase + self.POST_SENT_SPACE + sent  
+        #clean then return
+        finalPhrase = finalPhrase.strip()
+        return finalPhrase  
+      
+    def correctlyPunctuated(self, phrase):
+        for punc in self.PUNC_LIST:
+            if phrase.endswith(punc) == True:
+                return True
+        return False       
+
+    def getLast(self, list):
+        lastItemPos = len(list) - 1
+        lastItem = list[lastItemPos]
+        return lastItem        
+   
+#==========================================================================================
+#==========================================================================================
+#
+#   "PRIVATE"
+#
+#==========================================================================================
+#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   
+
+#==========================================================================================
+#   "PRIVATE"   Interact with csv
+#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+    def loadMem(self):
+        with open(self.MEM_PATH, 'rt') as csvfile:
+            self.mem = {'data': 'null',
+                        'phraseTypes':{'greetings':{},
+                                       'statements':{}}}
+            memReader = csv.DictReader(csvfile)
+            for row in memReader:
+                for phraseType, phraseDict in self.mem['phraseTypes'].items():         
+                   if not not row[phraseType+'Data']:
+                       #convert string to dict
+                       phraseDataStr = row[phraseType+'Data'] 
+                       phraseDataDict = ast.literal_eval(phraseDataStr)
+                       #add phraseData to mem
+                       self.mem['phraseTypes'][phraseType][row[phraseType]] = phraseDataDict
+                       
+    def saveMem(self, mem):#maybe go back at end and remove this var??????????????
+        with open(self.MEM_PATH, 'wt') as csvfile:
+            fieldnames = []
+            for memSection, sectionData in mem.items():
+                #section specific load instructions
+                if memSection == 'data':
+                    fieldnames.append(memSection)
+                if memSection == 'phraseTypes':
+                    for phraseType, phrase in mem['phraseTypes'].items():
+                        fieldnames.append(phraseType)
+                        fieldnames.append((phraseType + 'Data'))
+            
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, lineterminator = '\n')
+            writer.writeheader()
+            
+            #build rowDictList
+            rowDictList = []
+            for phraseType, phrases in mem['phraseTypes'].items():
+                rdlPos = 0
+                for phrase, phraseData in mem['phraseTypes'][phraseType].items():
+                    if rowDictList == [] or rdlPos > (len(rowDictList) - 1):
+                        rowDictList.append({})
+                    rowDictList[rdlPos][phraseType] = phrase
+                    rowDictList[rdlPos][(phraseType + 'Data')] = mem['phraseTypes'][phraseType][phrase]# used to = phraseType, fix!!!!!!!!!!!!!!!!!!!!
+                    rdlPos +=1
+            #write rows
+            for rowDict in rowDictList:
+               writer.writerow(rowDict)
+        csvfile.close()
+               
+    
+#==========================================================================================
+#   "PRIVATE"   Edit self.mem
+#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV    
+
+    def buildNewMem(self):#need to put in OG greetings
+        print('No memory found, building new memory...')
+        #add headers
+        self.mem = self.memShell
+        for phraseType, symb in self.phraseTypePuncDict.items():
+            self.mem['phraseTypes'][phraseType] = {}
+        
+        #add OGgreetings
+        for OGgreeting in self.OGgreetings:
+            self.addPhrase(OGgreeting, 'greetings', True)
+        
+        #write to csv
+        self.saveMem(self.mem)
+        self.loadMem()#NEED!!!
+        print('HAPPY BIRTHDAY!')
+        print('')
+        
+        
+    #OGgreeting should only be true if you are tyring to add a new OGgreeting
+    def addPhrase(self, phrase, phraseType, OGgreeting = False):
+        self.mem['phraseTypes'][phraseType][phrase] = self.phraseDataShell
+        if OGgreeting == False:
+            if phraseType == 'greetings':
+                self.mem['phraseTypes'][phraseType][phrase]['stats'] = {'OGgreeting': False}
+            #need something in stats for other phraseTypes???????????????????????????????????????
+        else:
+            self.mem['phraseTypes'][phraseType][phrase]['stats'] = {'OGgreeting':True}
+            #more???????????????????????????????????????????????????????????????????????????
+         
+#==========================================================================================
+#   "PRIVATE"   Read from self.mem
+#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV    
+    
+    #if respList to input not empty, return rand resp form respList,
+    #if respList to input empty, return False
+    def respInMem(self, input):
+        respFound = False
+        
+        for phraseType in self.mem['phraseTypes']:
+            #print('phraseType:', phraseType)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            for phrase in self.mem['phraseTypes'][phraseType]:
+                #print('phrase:', phrase)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if phrase == input:
+                    respList = self.mem['phraseTypes'][phraseType][phrase]['respList']
+                    #print('respList:', respList)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    if respList != []:
+                        response = random.choice(respList)
+                        #print('resp:', response)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        return response
+                    else:    
+                        return False
+        return False
+
+    
+    def guessResp(self, input):
+        #pick phraseType - currently just random
+        while(phraseType != 'greetings'):
+            phraseTypeDict = randFromDict(phraseTypePuncDict)
+            phraseType = phraseTypeDict['key']
+                
+        print('phraseType:', phraseType)#!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+        
+    
+
+    def getPhraseType(self, phrase):
+        if phrase in self.mem['phraseTypes']['greetings']:
+            return 'greetings'
+        else:
+            for phraseType, punc in self.phraseTypePuncDict.items():
+                if phraseType != 'greetings':
+                    if phrase.endswith(punc) == True:
+                        return phraseType
+                
+            
+    def isGreeting(self, phrase):#if you never use this again just pput it in getPhraseType#NEED???????????
+        for curPhrase, phraseData in self.mem['phraseTypes']['greetings']:
+            if curPhrase == phrase:
+                return True
+        return False
+    
+#==========================================================================================
+#   "PRIVATE"   Other
+#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  
+        
+    def randFromDict(self, dict):
+        key, val = random.choice(list(dict.items()))
+        randDict = {'key': key,
+                    'val': val}
+        return randDict  
+    
+    
+    def capSent(self, sent):
+        firstLetter = sent[0]
+        restOfSent = sent[1:]
+        CapFirstLetter = firstLetter.upper()
+        finalSent = CapFirstLetter + restOfSent
+        return finalSent
+  
+  
+    def splitSents(self, phrase):
+        sentList = [phrase]
+        for punc in self.PUNC_LIST:
+            tempSentList = []
+            for sent in sentList:
+                if punc in sent:
+                    splitSentList = sent.split(punc)
+                    for sent in splitSentList:
+                        tempSentList.append(sent)
+                else:
+                    tempSentList.append(sent)
+                sentList = []
+                for sent in tempSentList:
+                    if self.correctlyPunctuated(sent) == True:
+                        sentList.append(sent)
+                    else:
+                        sentList.append(sent + punc)
+        #clean up
+        cleanSentList = []
+        for sent in sentList:
+            if len(sent) != 1: #to get rid of extra punc
+                cleanSentList.append(sent.strip())
+        return cleanSentList
+        
+  
+
+ 

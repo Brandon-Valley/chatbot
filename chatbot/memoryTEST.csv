@@ -1,0 +1,3 @@
+data,statements,statementsData,greetings,greetingsData
+,I like dogs.,"{'respList': ['null'], 'stats': 'null'}",hi!,"{'respList': ['howdy!', 'sup dawg?'], 'stats': 'null'}"
+,,,howdy!,"{'respList': ['hey there good buddy!'], 'stats': 'null'}"

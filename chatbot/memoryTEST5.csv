@@ -1,0 +1,8 @@
+data,greetings,greetingsData,statements,statementsData
+,Hi!,"{'respList': ['Sup?', 'TEEEST', 'hiiiiiiiiiiiiii', 'hiiiiiiiiiiiiii', 'hiiiiiiiiiiiiii', 'Hello!'], 'stats': {'OGgreeting': True}}",Nothing much.,"{'respList': [], 'stats': 'null'}"
+,Howdy Partner!,"{'respList': ['Hi!', 'TEEEST', 'Howdy!', 'Howdy Partner!'], 'stats': {'OGgreeting': True}}",Nothing.,"{'respList': [], 'stats': 'null'}"
+,Well hello there.,"{'respList': ['Sup?', 'TEEEST', 'Hi buddy!', 'Hi!'], 'stats': {'OGgreeting': True}}",,
+,Sup?,"{'respList': ['Hi!', 'Nothing much.', 'Nothing.'], 'stats': {'OGgreeting': False}}",,
+,Hello!,"{'respList': [], 'stats': {'OGgreeting': False}}",,
+,Hi buddy!,"{'respList': [], 'stats': {'OGgreeting': False}}",,
+,Howdy!,"{'respList': [], 'stats': {'OGgreeting': False}}",,
