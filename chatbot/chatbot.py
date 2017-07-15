@@ -1,4 +1,4 @@
-
+#test
 import brain
 
 #current problem is that in memoryTEST.csv, phraseData is currently saved as a string,
@@ -11,11 +11,11 @@ import brain
 #maybe add something so that a response to a phrase cant be the same as a phrase? maybe funny if dont do??
 #maybe make a phrase class?
 #get rid of the r in front of the MEMORY_PATH
-home = r'C:\Users\Brandon\Documents\Personal Projects\chatbot\memoryTEST2.csv'
+home = r'C:\Users\Brandon\Documents\Personal Projects\chatbot\memoryTEST8.csv'
 work = r'C:\Users\valleba\Documents\personal\chatbot\memoryTEST6.csv'
 
 startUpPacket = {
-                 'MEMORY_PATH': work,#C:\Users\valleba\Documents\personal\chatbot\memoryTEST.csv
+                 'MEMORY_PATH': home,#C:\Users\valleba\Documents\personal\chatbot\memoryTEST.csv
                  'COMMAND_LIST': ['print memory','backup memory', 'end', 'test'],#belong here????????????
                  'PUNC_LIST': ['.','?','!'],
                  'PRE_CB_UI_STR': ' ',  #befor chatbot response
@@ -63,9 +63,9 @@ while chatbot.endProgram == False:
         #maybe make it print last response??????????????????????????????????????
     else:
         contConvo = True
-        print('yay, legit input')
-        cPhrase = chatbot.formatPhrase(inPhrase)
-        print(cPhrase)
+#         print('yay, legit input')
+#         cPhrase = chatbot.formatPhrase(inPhrase)
+#         print(cPhrase)
         
         chatbot.logInteraction()
         

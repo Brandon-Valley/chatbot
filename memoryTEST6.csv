@@ -1,0 +1,6 @@
+greetings,greetingsData,statements,statementsData,data
+Hey!,"{'respList': [], 'stats': {'OGgreeting': False}}",Hey.,"{'respList': [], 'stats': 'null'}",
+Hi.,"{'respList': ['Hey!', 'Hey.'], 'stats': {'OGgreeting': False}}",,,
+Well hello there.,"{'respList': ['Hi.'], 'stats': {'OGgreeting': True}}",,,
+Howdy Partner!,"{'respList': ['Hi!'], 'stats': {'OGgreeting': True}}",,,
+Hi!,"{'respList': ['Hey!'], 'stats': {'OGgreeting': True}}",,,

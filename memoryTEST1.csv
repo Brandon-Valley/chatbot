@@ -1,0 +1,8 @@
+statements,statementsData,greetings,greetingsData,data
+Nothing much.,"{'stats': 'null', 'respList': ['You are dumb.']}",Well hello there.,"{'stats': {'OGgreeting': True}, 'respList': ['Hey.']}",
+"Not me, you.","{'stats': {'OGgreeting': False}, 'respList': ['No, you are.', 'Not me, you.']}",Hello!,"{'stats': {'OGgreeting': False}, 'respList': ['No, you are.', 'Not me, you.']}",
+You are dumb.,"{'stats': {'OGgreeting': False}, 'respList': ['No, you are.', 'Not me, you.']}",Hi!,"{'stats': {'OGgreeting': True}, 'respList': ['Hello!']}",
+"No, you are.","{'stats': {'OGgreeting': False}, 'respList': ['No, you are.', 'Not me, you.']}",Sup?,"{'stats': {'OGgreeting': False}, 'respList': ['Nothing much.']}",
+,,Hey there.,"{'stats': {'OGgreeting': False}, 'respList': []}",
+,,Hey.,"{'stats': {'OGgreeting': False}, 'respList': []}",
+,,Howdy Partner!,"{'stats': {'OGgreeting': True}, 'respList': ['Sup?', 'Hey there.']}",

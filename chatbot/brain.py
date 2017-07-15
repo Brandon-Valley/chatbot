@@ -110,14 +110,17 @@ class Brain:
         input = self.formatPhrase(unFormattedInput)
         output = self.getLast(self.outList)
         outPhraseType = self.getPhraseType(output)
-        outOGgreetStat = self.mem['phraseTypes'][outPhraseType][output]['stats']['OGgreeting']
+        if 'OGgreeting' in self.mem['phraseTypes'][outPhraseType][output]['stats']:
+            outOGgreetStat = self.mem['phraseTypes'][outPhraseType][output]['stats']['OGgreeting']
+        else:
+            outOGgreetStat = False
           
         #add input to output's respList if not already there
         if input not in self.mem['phraseTypes'][outPhraseType][output]['respList']:
             self.mem['phraseTypes'][outPhraseType][output]['respList'].append(input)
            
         #find inPhraseType 
-        if outPhraseType == 'greetings' and outOGgreetStat == True:
+        if outPhraseType == 'greetings' and outOGgreetStat == True:#if output is OGgreeting, input is now a new greeting
             inPhraseType = 'greetings'
         else:
             inPhraseType = self.getPhraseType(input)
@@ -169,16 +172,22 @@ class Brain:
 #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
     def loadMem(self):
+        #build loadMemShell for basis of mem
+        loadMemShell = self.memShell
+        for phraseType, punc in self.phraseTypePuncDict.items():
+            loadMemShell['phraseTypes'][phraseType] = {}
+        self.mem = loadMemShell
+        #load csv data into mem
         with open(self.MEM_PATH, 'rt') as csvfile:
-            self.mem = {'data': 'null',
-                        'phraseTypes':{'greetings':{},
-                                       'statements':{}}}
+#             self.mem = {'data': 'null',
+#                         'phraseTypes':{'greetings':{},#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#                                        'statements':{}}}
             memReader = csv.DictReader(csvfile)
             for row in memReader:
                 for phraseType, phraseDict in self.mem['phraseTypes'].items():         
                    if not not row[phraseType+'Data']:
                        #convert string to dict
-                       phraseDataStr = row[phraseType+'Data'] 
+                       phraseDataStr = row[phraseType + 'Data'] 
                        phraseDataDict = ast.literal_eval(phraseDataStr)
                        #add phraseData to mem
                        self.mem['phraseTypes'][phraseType][row[phraseType]] = phraseDataDict
@@ -273,15 +282,32 @@ class Brain:
 
     
     def guessResp(self, input):
-        #pick phraseType - currently just random
-        while(phraseType != 'greetings'):
-            phraseTypeDict = randFromDict(phraseTypePuncDict)
-            phraseType = phraseTypeDict['key']
-                
-        print('phraseType:', phraseType)#!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #pick random phraseType - build list of valid phraseTypes then choose random phraseType from list
+        phraseTypeList = []
+        for phraseType, phrase in self.mem['phraseTypes'].items():
+           if phraseType != 'greetings' and  self.mem['phraseTypes'][phraseType] != {}:
+                phraseTypeList.append(phraseType)
+        #print('phraseTypeList:', phraseTypeList)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if phraseTypeList == []:
+            return self.getGreeting()
+        else:
+            phraseType = random.choice(phraseTypeList)
         
         
-    
+#         phraseTypeFound = False
+#         while(phraseTypeFound == False):
+#             phraseTypeDict = self.randFromDict(self.mem['phraseTypes'])
+#             phraseType = phraseTypeDict['key']
+#             if phraseType != 'greetings':
+#                 phraseTypeFound = True    
+#         print('phraseType:', phraseType)#!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+        #pick and return random phrase of chosen phraseType
+        phraseDict = self.mem['phraseTypes'][phraseType]
+        respDict = self.randFromDict(phraseDict)
+        response = respDict['key']
+        return response
+              
 
     def getPhraseType(self, phrase):
         if phrase in self.mem['phraseTypes']['greetings']:
