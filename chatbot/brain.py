@@ -23,7 +23,8 @@ class Brain:
         self.MEM_PATH = suPac['MEMORY_PATH']
         self.COMMAND_LIST = suPac['COMMAND_LIST']
         self.PUNC_LIST = suPac['PUNC_LIST']
-        self.PRE_CB_UI_STR = suPac['PRE_CB_UI_STR']
+        self.UI_NUM_SPACES_BEFORE_OUTPUT = suPac['UI_NUM_SPACES_BEFORE_OUTPUT']
+        self.UI_LINE_LENGTH = suPac['UI_LINE_LENGTH']
         self.POST_CB_UI_STR = suPac['POST_CB_UI_STR']
         self.POST_SENT_SPACE = suPac['POST_SENT_SPACE']
         self.OGgreetings = suPac['OG_GREETINGS']
@@ -61,7 +62,7 @@ class Brain:
 #==========================================================================================
 #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-    def getGreeting(self):#improve!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    def getGreeting(self):#improve!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -right now just rand!!!!!!!!!!!!
         randGreetDict = self.randFromDict(self.mem['phraseTypes']['greetings'])
         greeting = randGreetDict['key']
         return greeting
@@ -80,10 +81,6 @@ class Brain:
             response = self.guessResp(input)
         else:
             response = knownResp
-                
-        
-        
-        #response = 'response: for some reason i cant add a new greeting without all OGgreetings becomming False'
         return response
         
         
@@ -97,9 +94,7 @@ class Brain:
         elif command == 'end':
             self.endProgram = True
         elif command == 'test':
-            print('testing...')
-            print(self.mem['phraseTypes']['greetings']['hi TEEEEEEEEEEEEST!'])#['respList']
-            print((self.mem['phraseTypes']['greetings']['hi TEEEEEEEEEEEEST!']) is dict)
+            self.say('012345678012345678012345678!')
         else:
             print('ERROR: executeCommand()')
 
@@ -131,6 +126,31 @@ class Brain:
             
         #save to csv
         self.saveMem(self.mem)
+
+
+    def say(self, outPhrase):#add something for if a single word exceeds UI_LINE_LENGTH
+        printList = []
+        preOutSpaceStr = ' ' + self.UI_NUM_SPACES_BEFORE_OUTPUT
+        
+         #break up outPhrase into list of lines to print
+        curPos = 0
+        while (len(outPhrase) - curPos) > self.UI_LINE_LENGTH:
+            addPos = self.UI_LINE_LENGTH
+            while outPhrase[curPos + addPos] != ' ' and addPos != 0:#aPos = 0 means one word is bigger than UI_LINE_LENGTH
+                addPos -= 1
+            if addPos == 0:
+                printList.append(outPhrase[curPos: (curPos + (self.UI_LINE_LENGTH - 1))] + '-')
+                curPos += self.UI_LINE_LENGTH - 1
+            else:
+                addPos += 1 #this makes the space between words print at end of each line 
+                printList.append(outPhrase[curPos: (curPos + addPos)])
+                curPos += addPos
+        printList.append(outPhrase[curPos:]) 
+        
+        #print broken up lines to screen
+        for line in printList:
+            print(preOutSpaceStr + line)
+                
 
         
     def formatPhrase(self, phrase):                    

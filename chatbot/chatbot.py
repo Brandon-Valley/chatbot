@@ -11,6 +11,8 @@ import brain
 #maybe add something so that a response to a phrase cant be the same as a phrase? maybe funny if dont do??
 #maybe make a phrase class?
 #get rid of the r in front of the MEMORY_PATH
+#make print mem cleaner/actually usable
+#add undo/edit mem commands
 home = r'C:\Users\Brandon\Documents\Personal Projects\chatbot\memoryTEST8.csv'
 work = r'C:\Users\valleba\Documents\personal\chatbot\memoryTEST6.csv'
 
@@ -18,8 +20,9 @@ startUpPacket = {
                  'MEMORY_PATH': home,#C:\Users\valleba\Documents\personal\chatbot\memoryTEST.csv
                  'COMMAND_LIST': ['print memory','backup memory', 'end', 'test'],#belong here????????????
                  'PUNC_LIST': ['.','?','!'],
-                 'PRE_CB_UI_STR': ' ',  #befor chatbot response
-                 'POST_CB_UI_STR': '     :',  #after chatbot response  #rename!!!!!!!!!!!!!!
+                 'UI_NUM_SPACES_BEFORE_OUTPUT': ' ',  #befor chatbot response #make num!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                 'UI_LINE_LENGTH': 10,
+                 'POST_CB_UI_STR': '     :',  #after chatbot response  #rename!!!!!!!!!!!!!! #need????????????
                  'POST_SENT_SPACE': '  ',  #num spaces after sentance
                  'OG_GREETINGS': ['Hi!', 'Howdy Partner!', 'Well hello there.']
                                                                                     }
@@ -45,8 +48,9 @@ while chatbot.endProgram == False:
         outPhrase = chatbot.getLast(chatbot.outList)
         
     #print and log output
-    print(chatbot.PRE_CB_UI_STR + outPhrase)
-    chatbot.outList.append(outPhrase)#put these 2 somewhere else  VVVV???????????????
+    #print(chatbot.UI_NUM_SPACES_BEFORE_OUTPUT + outPhrase)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    chatbot.say(outPhrase)
+    chatbot.outList.append(outPhrase)#put these 2 somewhere else  VVVV???????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     chatbot.numResponses += 1
     
     #get and log new inPhrase
@@ -59,7 +63,7 @@ while chatbot.endProgram == False:
     if inPhrase in chatbot.COMMAND_LIST:
         chatbot.executeCommand(inPhrase)
     elif chatbot.correctlyPunctuated(inPhrase) == False:
-        print(chatbot.PRE_CB_UI_STR + 'Please use correct punctuation you uncultured swine!  Lets try that again.')
+        print(chatbot.UI_NUM_SPACES_BEFORE_OUTPUT + 'Please use correct punctuation you uncultured swine!  Lets try that again.')
         #maybe make it print last response??????????????????????????????????????
     else:
         contConvo = True
@@ -73,12 +77,5 @@ while chatbot.endProgram == False:
 
 
 
-#brain = cbFuncs.loadBrain(BRAIN_PATH)
 
-#print(brain)
-#cbFuncs.saveBrain(BRAIN_PATH)
-
-#cbFuncs.makeNewBrain(BRAIN_PATH)
-
-#cbFuncs.addPhrase(BRAIN_PATH)
 
