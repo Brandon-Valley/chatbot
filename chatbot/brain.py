@@ -23,12 +23,13 @@ class Brain:
         self.MEM_PATH = suPac['MEMORY_PATH']
         self.COMMAND_LIST = suPac['COMMAND_LIST']
         self.PUNC_LIST = suPac['PUNC_LIST']
+        self.OGgreetings = suPac['OG_GREETINGS']
+        
         self.UI_NUM_SPACES_BEFORE_OUTPUT = suPac['UI_NUM_SPACES_BEFORE_OUTPUT']
         self.UI_LINE_LENGTH = suPac['UI_LINE_LENGTH']
         self.UI_NUM_SPACES_BEFORE_INPUT = suPac['UI_NUM_SPACES_BEFORE_INPUT']
         self.UI_INPUT_PROMT_SYMBOL = suPac['UI_INPUT_PROMT_SYMBOL']
-        self.POST_SENT_SPACE = suPac['POST_SENT_SPACE']
-        self.OGgreetings = suPac['OG_GREETINGS']
+        
         
         self.mem = {}
         self.inList = []
@@ -95,7 +96,7 @@ class Brain:
         elif command == 'end':
             self.endProgram = True
         elif command == 'test':
-            self.fancyPrint('012345678012345678012345678!', 1)
+            self.fancyPrint('This is a test. i am putting one space at the end.', 1)
         else:
             print('ERROR: executeCommand()')
 
@@ -167,7 +168,8 @@ class Brain:
                 
 
         
-    def formatPhrase(self, phrase):                    
+    def formatPhrase(self, phrase):    
+        postSentSpace = ' ' #this really should be a UI option but changing it might break fancyPrint and I am lazy                
         #get list of all sentances (uncapitalized)
         sentList = self.splitSents(phrase)
         #capitalize first letter of every sentance 
@@ -177,7 +179,7 @@ class Brain:
         #put it all together into one phrase
         finalPhrase = ''
         for sent in capSentList:
-            finalPhrase = finalPhrase + self.POST_SENT_SPACE + sent  
+            finalPhrase = finalPhrase + postSentSpace + sent  
         #clean then return
         finalPhrase = finalPhrase.strip()
         return finalPhrase  

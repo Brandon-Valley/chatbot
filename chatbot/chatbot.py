@@ -1,11 +1,4 @@
-#test
 import brain
-
-#current problem is that in memoryTEST.csv, phraseData is currently saved as a string,
-#the problem is PROBABLY happening when you made the csv so probably something in saveMem,
-#if the problem doesnt pop out, might as well finish everything you need to in order to save your,
-#own original mem = finish buildNewMem() by adding all the stuff for OGgreetings
-
 
 #test and make sure that you cant have a statment and greeting be the same / mess stuff up
 #maybe add something so that a response to a phrase cant be the same as a phrase? maybe funny if dont do??
@@ -20,22 +13,18 @@ startUpPacket = {
                  'MEMORY_PATH': home,#C:\Users\valleba\Documents\personal\chatbot\memoryTEST.csv
                  'COMMAND_LIST': ['print memory','backup memory', 'end', 'test'],#belong here????????????
                  'PUNC_LIST': ['.','?','!'],
+                 'OG_GREETINGS': ['Hi!', 'Howdy Partner!', 'Well hello there.'],
+                 
                  'UI_NUM_SPACES_BEFORE_OUTPUT': 1,  #befor chatbot response 
                  'UI_LINE_LENGTH': 15,
                  'UI_NUM_SPACES_BEFORE_INPUT': 'built below' ,  #before user input
-                 'UI_INPUT_PROMT_SYMBOL': ':',
-                 'POST_SENT_SPACE': '  ',  #num spaces after sentance
-                 'OG_GREETINGS': ['Hi!', 'Howdy Partner!', 'Well hello there.']
+                 'UI_INPUT_PROMT_SYMBOL': ':'
                                                                                     }
-numSpacesBeforeInput = (startUpPacket['UI_NUM_SPACES_BEFORE_OUTPUT'] * 2) + startUpPacket['UI_LINE_LENGTH']
+numSpacesBeforeInput = startUpPacket['UI_NUM_SPACES_BEFORE_OUTPUT'] + startUpPacket['UI_LINE_LENGTH'] + 1
 startUpPacket['UI_NUM_SPACES_BEFORE_INPUT'] = numSpacesBeforeInput
 
 #make chatbot                                            
 chatbot = brain.Brain(startUpPacket)
-# chatbot.buildNewMem()#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#greet user and get first response
-#greeting = chatbot.getGreeting()
-#inPhrase = input(greeting + chatbot.UI_NUM_SPACES_BEFORE_INPUT)
 
 contConvo = True
 
@@ -52,7 +41,6 @@ while chatbot.endProgram == False:
         outPhrase = chatbot.getLast(chatbot.outList)
         
     #print and log output
-    #print(chatbot.UI_NUM_SPACES_BEFORE_OUTPUT + outPhrase)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     chatbot.output(outPhrase)
 
     #get and log new inPhrase
@@ -64,13 +52,13 @@ while chatbot.endProgram == False:
     if inPhrase in chatbot.COMMAND_LIST:
         chatbot.executeCommand(inPhrase)
     elif chatbot.correctlyPunctuated(inPhrase) == False:
-        print(chatbot.UI_NUM_SPACES_BEFORE_OUTPUT + 'Please use correct punctuation you uncultured swine!  Lets try that again.')
+        print(chatbot.UI_NUM_SPACES_BEFORE_OUTPUT + 'Please use correct punctuation you uncultured swine!  Lets try that again.')#make fanceyPrint!!!!!!!!!!!!!!
         #maybe make it print last response??????????????????????????????????????
     else:
         contConvo = True
 #         print('yay, legit input')
 #         cPhrase = chatbot.formatPhrase(inPhrase)
-#         print(cPhrase)
+#         chatbot.fancyPrint(inPhrase, 1)
         
         chatbot.logInteraction()
         
