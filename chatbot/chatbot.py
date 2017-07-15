@@ -20,18 +20,22 @@ startUpPacket = {
                  'MEMORY_PATH': home,#C:\Users\valleba\Documents\personal\chatbot\memoryTEST.csv
                  'COMMAND_LIST': ['print memory','backup memory', 'end', 'test'],#belong here????????????
                  'PUNC_LIST': ['.','?','!'],
-                 'UI_NUM_SPACES_BEFORE_OUTPUT': ' ',  #befor chatbot response #make num!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                 'UI_LINE_LENGTH': 10,
-                 'POST_CB_UI_STR': '     :',  #after chatbot response  #rename!!!!!!!!!!!!!! #need????????????
+                 'UI_NUM_SPACES_BEFORE_OUTPUT': 1,  #befor chatbot response 
+                 'UI_LINE_LENGTH': 15,
+                 'UI_NUM_SPACES_BEFORE_INPUT': 'built below' ,  #before user input
+                 'UI_INPUT_PROMT_SYMBOL': ':',
                  'POST_SENT_SPACE': '  ',  #num spaces after sentance
                  'OG_GREETINGS': ['Hi!', 'Howdy Partner!', 'Well hello there.']
                                                                                     }
+numSpacesBeforeInput = (startUpPacket['UI_NUM_SPACES_BEFORE_OUTPUT'] * 2) + startUpPacket['UI_LINE_LENGTH']
+startUpPacket['UI_NUM_SPACES_BEFORE_INPUT'] = numSpacesBeforeInput
+
 #make chatbot                                            
 chatbot = brain.Brain(startUpPacket)
 # chatbot.buildNewMem()#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #greet user and get first response
 #greeting = chatbot.getGreeting()
-#inPhrase = input(greeting + chatbot.POST_CB_UI_STR)
+#inPhrase = input(greeting + chatbot.UI_NUM_SPACES_BEFORE_INPUT)
 
 contConvo = True
 
@@ -49,13 +53,10 @@ while chatbot.endProgram == False:
         
     #print and log output
     #print(chatbot.UI_NUM_SPACES_BEFORE_OUTPUT + outPhrase)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    chatbot.say(outPhrase)
-    chatbot.outList.append(outPhrase)#put these 2 somewhere else  VVVV???????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    chatbot.numResponses += 1
-    
+    chatbot.output(outPhrase)
+
     #get and log new inPhrase
-    inPhrase = input(chatbot.POST_CB_UI_STR)
-    chatbot.inList.append(inPhrase)
+    inPhrase = chatbot.getInput()
     
     contConvo = False
 

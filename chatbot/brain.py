@@ -25,7 +25,8 @@ class Brain:
         self.PUNC_LIST = suPac['PUNC_LIST']
         self.UI_NUM_SPACES_BEFORE_OUTPUT = suPac['UI_NUM_SPACES_BEFORE_OUTPUT']
         self.UI_LINE_LENGTH = suPac['UI_LINE_LENGTH']
-        self.POST_CB_UI_STR = suPac['POST_CB_UI_STR']
+        self.UI_NUM_SPACES_BEFORE_INPUT = suPac['UI_NUM_SPACES_BEFORE_INPUT']
+        self.UI_INPUT_PROMT_SYMBOL = suPac['UI_INPUT_PROMT_SYMBOL']
         self.POST_SENT_SPACE = suPac['POST_SENT_SPACE']
         self.OGgreetings = suPac['OG_GREETINGS']
         
@@ -94,7 +95,7 @@ class Brain:
         elif command == 'end':
             self.endProgram = True
         elif command == 'test':
-            self.say('012345678012345678012345678!')
+            self.fancyPrint('012345678012345678012345678!', 1)
         else:
             print('ERROR: executeCommand()')
 
@@ -127,29 +128,42 @@ class Brain:
         #save to csv
         self.saveMem(self.mem)
 
-
-    def say(self, outPhrase):#add something for if a single word exceeds UI_LINE_LENGTH
-        printList = []
-        preOutSpaceStr = ' ' + self.UI_NUM_SPACES_BEFORE_OUTPUT
+    #prints and logs outPhrase
+    def output(self, outPhrase):
+        self.fancyPrint(outPhrase, self.UI_NUM_SPACES_BEFORE_OUTPUT)
+        self.outList.append(outPhrase)
+        self.numResponses += 1
         
-         #break up outPhrase into list of lines to print
+    #prompts for, logs, then returns user input
+    def getInput(self):
+        preInSpaceStr = ' ' * self.UI_NUM_SPACES_BEFORE_INPUT
+        inPhrase = input(preInSpaceStr + self.UI_INPUT_PROMT_SYMBOL)
+        self.inList.append(inPhrase)
+        return inPhrase        
+        
+    #should be used for any official print to screen
+    def fancyPrint(self, printPhrase, numPreSpaces):#IS THIS FUNC StILL IN RIGHT SPOT??????????????????????????????????????????
+        printList = []
+        PreSpaceStr = ' ' * numPreSpaces
+        
+         #break up printPhrase into list of lines to print
         curPos = 0
-        while (len(outPhrase) - curPos) > self.UI_LINE_LENGTH:
+        while (len(printPhrase) - curPos) > self.UI_LINE_LENGTH:
             addPos = self.UI_LINE_LENGTH
-            while outPhrase[curPos + addPos] != ' ' and addPos != 0:#aPos = 0 means one word is bigger than UI_LINE_LENGTH
+            while printPhrase[curPos + addPos] != ' ' and addPos != 0:#aPos = 0 means one word is bigger than UI_LINE_LENGTH
                 addPos -= 1
             if addPos == 0:
-                printList.append(outPhrase[curPos: (curPos + (self.UI_LINE_LENGTH - 1))] + '-')
+                printList.append(printPhrase[curPos: (curPos + (self.UI_LINE_LENGTH - 1))] + '-')
                 curPos += self.UI_LINE_LENGTH - 1
             else:
                 addPos += 1 #this makes the space between words print at end of each line 
-                printList.append(outPhrase[curPos: (curPos + addPos)])
+                printList.append(printPhrase[curPos: (curPos + addPos)])
                 curPos += addPos
-        printList.append(outPhrase[curPos:]) 
+        printList.append(printPhrase[curPos:]) 
         
         #print broken up lines to screen
         for line in printList:
-            print(preOutSpaceStr + line)
+            print(PreSpaceStr + line)
                 
 
         
