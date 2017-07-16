@@ -16,7 +16,7 @@ startUpPacket = {
                  'OG_GREETINGS': ['Hi!', 'Howdy Partner!', 'Well hello there.'],
                  
                  'UI_NUM_SPACES_BEFORE_OUTPUT': 1,  #befor chatbot response 
-                 'UI_LINE_LENGTH': 15,
+                 'UI_LINE_LENGTH': 25,
                  'UI_NUM_SPACES_BEFORE_INPUT': 'built below' ,  #before user input
                  'UI_INPUT_PROMT_SYMBOL': ':'
                                                                                     }
@@ -52,8 +52,8 @@ while chatbot.endProgram == False:
     if inPhrase in chatbot.COMMAND_LIST:
         chatbot.executeCommand(inPhrase)
     elif chatbot.correctlyPunctuated(inPhrase) == False:
-        print(chatbot.UI_NUM_SPACES_BEFORE_OUTPUT + 'Please use correct punctuation you uncultured swine!  Lets try that again.')#make fanceyPrint!!!!!!!!!!!!!!
-        #maybe make it print last response??????????????????????????????????????
+        chatbot.scold('incorect punctuation')
+        
     else:
         contConvo = True
 #         print('yay, legit input')

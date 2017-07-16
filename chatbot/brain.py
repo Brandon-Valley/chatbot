@@ -134,6 +134,7 @@ class Brain:
         self.fancyPrint(outPhrase, self.UI_NUM_SPACES_BEFORE_OUTPUT)
         self.outList.append(outPhrase)
         self.numResponses += 1
+    
         
     #prompts for, logs, then returns user input
     def getInput(self):
@@ -141,33 +142,18 @@ class Brain:
         inPhrase = input(preInSpaceStr + self.UI_INPUT_PROMT_SYMBOL)
         self.inList.append(inPhrase)
         return inPhrase        
-        
-    #should be used for any official print to screen
-    def fancyPrint(self, printPhrase, numPreSpaces):#IS THIS FUNC StILL IN RIGHT SPOT??????????????????????????????????????????
-        printList = []
-        PreSpaceStr = ' ' * numPreSpaces
-        
-         #break up printPhrase into list of lines to print
-        curPos = 0
-        while (len(printPhrase) - curPos) > self.UI_LINE_LENGTH:
-            addPos = self.UI_LINE_LENGTH
-            while printPhrase[curPos + addPos] != ' ' and addPos != 0:#aPos = 0 means one word is bigger than UI_LINE_LENGTH
-                addPos -= 1
-            if addPos == 0:
-                printList.append(printPhrase[curPos: (curPos + (self.UI_LINE_LENGTH - 1))] + '-')
-                curPos += self.UI_LINE_LENGTH - 1
-            else:
-                addPos += 1 #this makes the space between words print at end of each line 
-                printList.append(printPhrase[curPos: (curPos + addPos)])
-                curPos += addPos
-        printList.append(printPhrase[curPos:]) 
-        
-        #print broken up lines to screen
-        for line in printList:
-            print(PreSpaceStr + line)
-                
-
-        
+    
+    
+    #makes user feel bad for being dumb
+    def scold(self, scoldType):
+        if scoldType == 'incorect punctuation':
+           scoldStr = 'Please use correct punctuation you uncultured swine! Lets try that again...'
+        else:
+            pass#add more lator
+        self.fancyPrint(scoldStr, self.UI_NUM_SPACES_BEFORE_OUTPUT)
+        print('')
+   
+   
     def formatPhrase(self, phrase):    
         postSentSpace = ' ' #this really should be a UI option but changing it might break fancyPrint and I am lazy                
         #get list of all sentances (uncapitalized)
@@ -364,7 +350,32 @@ class Brain:
 #==========================================================================================
 #   "PRIVATE"   Other
 #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  
+    
+    #should be used for any official print to screen
+    def fancyPrint(self, printPhrase, numPreSpaces):#IS THIS FUNC StILL IN RIGHT SPOT??????????????????????????????????????????
+        printList = []
+        PreSpaceStr = ' ' * numPreSpaces
         
+         #break up printPhrase into list of lines to print
+        curPos = 0
+        while (len(printPhrase) - curPos) > self.UI_LINE_LENGTH:
+            addPos = self.UI_LINE_LENGTH
+            while printPhrase[curPos + addPos] != ' ' and addPos != 0:#aPos = 0 means one word is bigger than UI_LINE_LENGTH
+                addPos -= 1
+            if addPos == 0:
+                printList.append(printPhrase[curPos: (curPos + (self.UI_LINE_LENGTH - 1))] + '-')
+                curPos += self.UI_LINE_LENGTH - 1
+            else:
+                addPos += 1 #this makes the space between words print at end of each line 
+                printList.append(printPhrase[curPos: (curPos + addPos)])
+                curPos += addPos
+        printList.append(printPhrase[curPos:]) 
+        
+        #print broken up lines to screen
+        for line in printList:
+            print(PreSpaceStr + line)
+                
+                    
     def randFromDict(self, dict):
         key, val = random.choice(list(dict.items()))
         randDict = {'key': key,
