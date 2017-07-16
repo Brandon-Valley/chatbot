@@ -87,7 +87,8 @@ class Brain:
         
         
     def executeCommand(self, command):
-        print('Executing Command:', command)
+        self.fancyPrint('Executing Command: ' + command, self.UI_NUM_SPACES_BEFORE_OUTPUT)
+        print('')
         if command == 'print memory':
             print('Printing memory...')
             print(self.mem)
